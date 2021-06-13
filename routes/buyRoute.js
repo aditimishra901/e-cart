@@ -8,7 +8,7 @@ const User = require("../model/usermodel.js");
 
 
 
-router.get("/showCart",function(req,res){
+router.get("/showCart",verify,function(req,res){
    Order.find(function(err,result){
 
    }).populate("")
@@ -18,33 +18,47 @@ router.get("/showCart",function(req,res){
 
 
 router.post("/cart", verify, function(req,res){
+     // const userId =  req.body.user;
+    const cart = new Order({
+      productId:req.body.productId,
+      quantity:req.body.quantity
+    });
+  let user = req.user;
+Order.find(req.user,function(err,cart){
+  if(cart){
+    let itemIndex = cart.products.findIndex(p=> p.productId === productId);
+     if(itemIndex>-1){
+       let productItem =  cart.products[itemIndex];
+       productItem.quantity = quantity;
+       cart.products[itemIndex] = productItem;
 
-      const order = new Order({
-        _id:mongoose.Types.ObjectId(),
-      
-        product:req.body.product,
-          quantity:req.body.quantity
-      });
+     }
+     else {
+       cart.products.push({ productId, quantity});
+
+     }
+
+     cart.save(function(error,cart){
+       if(!error){
+         res.status(200).send(cart);
+
+       }
+       else
+
+         res.send(error);
+
+     }).populate("products");
 
 
 
-           Product.findById(req.body.product,function(error,productExists){
-             if(productExists){
-
-                 order.save(function(e,orderAdded){
-                   if(!e){res.status(200).send(orderAdded);}
-                   else{res.send(e);}
-                 });
-
-             }
-             else {
-               res.status(400).send("product does not exists");
-              }
-
-           });
-
-
-
+  }
+  else {
+    res.json({
+      error:err,
+      message:"user not logged in"
+    });
+  }
+});
 
 });
 

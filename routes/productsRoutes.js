@@ -7,6 +7,8 @@ var quantity =0;
 const mongoose = require("mongoose");
 const User = require("../model/usermodel.js");
 
+
+
 router.get("/",function(req,res){
    Product.insertMany(data.products);
    res.send(data.products);
@@ -19,8 +21,10 @@ router.get("/all",function(req,res){
     }).populate("user","name");
 });
 
+
+
 router.post("/upload",verify,function(req,res){
-  
+
   const product = new Product({
     _id:mongoose.Types.ObjectId(),
     category:req.body.category,
@@ -80,5 +84,8 @@ router.post("/:genre",function(req,res){
 
 
 });
+
+
+router.post("/:genre/:name/:")
 
 module.exports= router;
